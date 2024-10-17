@@ -17,15 +17,7 @@ export default function App() {
 
   useEffect(() => {
     if (!isLogin) {
-      const local_login = JSON.parse(localStorage.getItem("is_login"))
-      if (local_login) {
-        dispatch({
-          type: LOG_IN,
-          payload: local_login 
-      })
-      } else {
-        navigate("/login");
-      }
+      navigate("/login");
     }
   }, [isLogin, navigate]); // Added navigate as a dependency
 
@@ -34,7 +26,7 @@ export default function App() {
       <Routes>
         <Route path="/" exact element={<Home />} />
         <Route path="/login" exact element={<Login />} />
-        <Route path="/answer/:id" element={<AnswerComponent />} />
+        <Route path="//questions/:question_id" element={<AnswerComponent />} />
         <Route path="/leaderboard" element={<LeaderboardComponent />} />
         <Route path="/new" element={<AddQuestionComponent />} />
         <Route path="/404" element={<NotFound />} />

@@ -12,7 +12,7 @@ const AddQuestionComponent = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    console.log("user when add: ", user)
     try {
       await _saveQuestion({
         optionOneText,

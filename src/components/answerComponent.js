@@ -1,77 +1,116 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useLocation, useNavigate, redirect } from 'react-router-dom';
-import { _getQuestions, _saveQuestionAnswer } from '../service/_DATA'; // Adjust import according to your setup
+import { useParams, useLocation, useNavigate } from 'react-router-dom';
+import { _getQuestions, _getUsers, _saveQuestionAnswer } from '../service/_DATA'; 
 import "./style.css";
 import { useSelector } from 'react-redux';
 
 const AnswerComponent = () => {
-  const { id } = useParams(); // Get the question ID from the URL
+  const { question_id } = useParams();
   const navigate = useNavigate();
   const [question, setQuestion] = useState(null);
   const location = useLocation();
-  const { state } = location; // Get the state passed from navigation
-  const option = state?.option; // Assuming 'option' is passed to determine the correct option
-  const user = useSelector((state) => state.user); // Assuming 'user' contains the logged-in user's information
+  const { state } = location; 
+  const user = useSelector((state) => state.user);
+  const { isAnswer } = state || {};
+  const [selectedOption, setSelectedOption] = useState(null); 
 
   useEffect(() => {
-    const fetchQuestion = async () => {
+    const fetchQuestionAndUsers = async () => {
       const questions = await _getQuestions();
-      const fetchedQuestion = questions[id]; // Assuming questions is an object
-      console.log("fetchedQuestion ==============: ", fetchedQuestion)
+      const users = await _getUsers();
+
+      const fetchedQuestion = questions[question_id]; 
       if (!fetchedQuestion) {
-        navigate("/404")
+        navigate("/404");
+        return;
       }
-      setQuestion(fetchedQuestion);
+
+      const authorAvatar = users[fetchedQuestion.author].avatarURL;
+      setQuestion({ ...fetchedQuestion, authorAvatar });
     };
 
-    fetchQuestion();
-  }, [id]);
+    fetchQuestionAndUsers();
+  }, [question_id, navigate]);
+
+  const calculatePercentage = (option) => {
+    const totalVotes = question.optionOne.votes.length + question.optionTwo.votes.length;
+    if (totalVotes === 0) return 0; 
+    return ((option.votes.length / totalVotes) * 100).toFixed(2); 
+  };
 
   const onAnswerSelect = async (selectedOption) => {
     try {
-      // Ensure you pass the correct arguments to _saveQuestionAnswer
       await _saveQuestionAnswer({
-        authedUser: user.id, // User ID
-        qid: id, // Question ID
-        answer: selectedOption // 'optionOne' or 'optionTwo'
+        authedUser: user.id, 
+        qid: question_id, 
+        answer: selectedOption 
       });
-      navigate("/"); // Navigate after saving the answer
+
+      setQuestion((prev) => ({
+        ...prev,
+        [selectedOption]: {
+          ...prev[selectedOption],
+          votes: prev[selectedOption].votes.concat(user.id),
+        },
+      }));
+      setSelectedOption(selectedOption); 
     } catch (error) {
       console.error("Error saving answer:", error);
     }
   };
 
-
-//   const { optionOne, optionTwo } = question;
   if (!question) {
-    return <></>
+    return <></>;
   }
+
+  const isOptionSelected = selectedOption !== null || isAnswer;
+
   return (
     <div className="answer-component">
-      <h3>Choose an Option</h3>
-      <div className="option-card">
-        <h4 style={{ color: option === "1" ? 'green' : 'black' }}>
-          {question.optionOne.text}
-        </h4>
-        <button 
-          onClick={() => onAnswerSelect("optionOne")} 
-          className="option-button" 
-          disabled={state?.isAnswer} // Disable if isAnswered is true
-        >
-          Select
-        </button>
+      {/* Poll creator section */}
+      <div className="poll-creator">
+        <img src={question.authorAvatar} alt={`${question.author} avatar`} className="creator-avatar" />
+        <div className="creator-info">
+          <h4 className="creator-name">{question.author}</h4>
+          <p className="creator-text">Would you rather...</p>
+        </div>
       </div>
-      <div className="option-card">
-        <h4 style={{ color: option === "2" ? 'green' : 'black' }}>
-          {question.optionTwo.text}
-        </h4>
-        <button 
-          onClick={() => onAnswerSelect("optionTwo")} 
-          className="option-button" 
-          disabled={state?.isAnswer} // Disable if isAnswered is true
-        >
-          Select
-        </button>
+
+      <h3 className="poll-question">{question.optionOne.text} or {question.optionTwo.text}?</h3>
+
+      <div className="options-container">
+        <div className="option-card" style={{ backgroundColor: isAnswer ? (question.optionOne.votes.includes(user.id) ? 'lightgreen' : '') : '' }}>
+          <h4>{question.optionOne.text}</h4>
+          <button 
+            onClick={() => onAnswerSelect("optionOne")} 
+            className="option-button" 
+            disabled={isOptionSelected}
+          >
+            Select
+          </button>
+          {selectedOption === "optionOne" && !isAnswer && (
+            <p>{`${calculatePercentage(question.optionOne)}% of people voted for this option`}</p>
+          )}
+          {isAnswer && (
+            <p>{`${calculatePercentage(question.optionOne)}% of people voted for this option`}</p>
+          )}
+        </div>
+        <div className="option-card" style={{ backgroundColor: isAnswer ? (question.optionTwo.votes.includes(user.id) ? 'lightgreen' : '') : '' }}>
+          <h4>{question.optionTwo.text}</h4>
+          <button 
+            onClick={() => onAnswerSelect("optionTwo")} 
+            className="option-button" 
+            disabled={isOptionSelected}
+          >
+            Select
+          </button>
+          {selectedOption === "optionTwo" && !isAnswer && (
+            <p>{`${calculatePercentage(question.optionTwo)}% of people voted for this option`}</p>
+          )}
+          {isAnswer && (
+            <p>{`${calculatePercentage(question.optionTwo)}% of people voted for this option`}</p>
+          )}
+        </div>
       </div>
     </div>
   );

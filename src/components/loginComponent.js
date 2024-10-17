@@ -25,7 +25,6 @@ const Login = () => {
                 type: LOG_IN,
                 payload: temp_user 
             })
-            localStorage.setItem("is_login", JSON.stringify(temp_user))
             navigate("/")
         }
     }

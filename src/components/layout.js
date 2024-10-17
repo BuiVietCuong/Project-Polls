@@ -10,10 +10,7 @@ const Layout = ({ children }) => {
   const dispatch = useDispatch();
 
   function onLogout() {
-    localStorage.removeItem("is_login")
-    dispatch({
-      type: LOG_OUT
-    });
+    dispatch({ type: LOG_OUT });
     navigate("/login");
   }
 
@@ -22,9 +19,9 @@ const Layout = ({ children }) => {
       {isLogin && (
         <nav className="navbar">
           <ul>
-            <li><Link to="/">Home</Link></li> {/* Use Link here */}
-            <li><Link to="/leaderboard">LeaderBoard</Link></li> {/* Use Link here */}
-            <li><Link to="/new">New</Link></li> {/* Use Link here */}
+            <li><Link to="/">Home</Link></li>
+            <li><Link to="/leaderboard">LeaderBoard</Link></li>
+            <li><Link to="/new">New</Link></li>
           </ul>
           <div className="user-info">
             {user ? (
@@ -43,5 +40,6 @@ const Layout = ({ children }) => {
     </div>
   );
 };
+
 
 export default Layout;

@@ -16,7 +16,7 @@ const Question = ({ option, isAnswer, qu, author, dateTime }) => {
   });
 
   const handleButtonClick = () => {
-    navigate(`/answer/${qu.id}`, { state: { isAnswer: isAnswer, option: option } }); // Pass additional parameters in state
+    navigate(`/questions/${qu.id}`, { state: { isAnswer: isAnswer, option: option } }); // Pass additional parameters in state
   };
 
   return (

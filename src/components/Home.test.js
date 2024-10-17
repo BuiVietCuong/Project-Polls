@@ -1,31 +1,75 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
-import Home from './homeComponent'; // Adjust the path based on your project structure
 import { _getQuestions } from '../service/_DATA';
-import rootReducer from '../reducer';
+import Home from './homeComponent';
 
-jest.mock('../service/_DATA'); // Mock the _getQuestions function
+// Mock the _getQuestions function
+jest.mock('../service/_DATA', () => ({
+  _getQuestions: jest.fn(),
+}));
 
-const mockStore = (initialState) => {
-  return createStore(rootReducer, initialState);
+// Simple reducer for testing
+const initialState = {
+  user: { id: 'sarahedo' },
 };
 
+const reducer = (state = initialState, action) => {
+  switch (action.type) {
+    default:
+      return state;
+  }
+};
+
+const store = createStore(reducer);
+
 describe('Home Component', () => {
-  const onButtonClick = jest.fn();
+  beforeEach(() => {
+    _getQuestions.mockResolvedValueOnce({
+      "8xf0y6ziyjabvozdd253nd": {
+        id: '8xf0y6ziyjabvozdd253nd',
+        author: 'sarahedo',
+        timestamp: 1467166872634,
+        optionOne: {
+          votes: ['sarahedo'],
+          text: 'Build our new application with Javascript',
+        },
+        optionTwo: {
+          votes: [],
+          text: 'Build our new application with Typescript',
+        },
+      },
+      "6ni6ok3ym7mf1p33lnez": {
+        id: '6ni6ok3ym7mf1p33lnez',
+        author: 'mtsamis',
+        timestamp: 1468479767190,
+        optionOne: {
+          votes: [],
+          text: 'hire more frontend developers',
+        },
+        optionTwo: {
+          votes: ['sarahedo'],
+          text: 'hire more backend developers',
+        },
+      },
+    });
+  });
 
-  it('displays no new questions message when there are no new questions', async () => {
-    _getQuestions.mockResolvedValueOnce({}); // Return an empty object for questions
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
 
-    const store = mockStore({ user: { id: 'sarahedo' }, isLogin: true });
-    
+  test('displays no questions message when there are no new questions', async () => {
+    _getQuestions.mockResolvedValueOnce({}); // Simulate no questions available
+
     render(
       <Provider store={store}>
-        <Home onButtonClick={onButtonClick} />
+        <Home onButtonClick={jest.fn()} />
       </Provider>
     );
-    
-    await waitFor(() => expect(screen.getByText(/no new questions available/i)).toBeInTheDocument());
+
+    const noQuestionsMessage = await screen.findByText(/No new questions available./i);
+    expect(noQuestionsMessage).toBeInTheDocument();
   });
 });
