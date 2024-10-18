@@ -8,7 +8,15 @@ const LeaderboardComponent = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       const usersData = await _getUsers();
-      setUsers(Object.values(usersData)); // Convert users object to an array
+      const usersArray = Object.values(usersData).map(user => ({
+        ...user,
+        score: Object.keys(user.answers).length + user.questions.length, // Calculate score
+      }));
+
+      // Sort users by score in descending order
+      usersArray.sort((a, b) => b.score - a.score);
+
+      setUsers(usersArray); // Set the sorted users
     };
 
     fetchUsers();

@@ -55,6 +55,7 @@ const Home = ({ onButtonClick }) => {
               {doneQuestions.map((question, index) => (
                 <div className="question-card" key={index}>
                   <Question
+                    key={question.id}
                     option={question.optionOne.votes.includes(user.id) ? "1" : "2"}
                     isAnswer={true}
                     qu={question}
@@ -74,6 +75,7 @@ const Home = ({ onButtonClick }) => {
               {newQuestions.map((question, index) => (
                 <div className="question-card" key={index}>
                   <Question
+                    key={question.id}
                     option=""
                     isAnswer={false}
                     qu={question}

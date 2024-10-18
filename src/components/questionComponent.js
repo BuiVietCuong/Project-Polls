@@ -2,7 +2,7 @@ import React from 'react';
 import './style.css'; // Import your CSS file for styling
 import { useNavigate } from 'react-router-dom';
 
-const Question = ({ option, isAnswer, qu, author, dateTime }) => {
+const Question = ({ key, option, isAnswer, qu, author, dateTime }) => {
   const navigate = useNavigate();
 
   // Convert epoch time to a readable format

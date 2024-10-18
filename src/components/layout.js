@@ -21,7 +21,7 @@ const Layout = ({ children }) => {
           <ul>
             <li><Link to="/">Home</Link></li>
             <li><Link to="/leaderboard">LeaderBoard</Link></li>
-            <li><Link to="/new">New</Link></li>
+            <li><Link to="/add">New</Link></li>
           </ul>
           <div className="user-info">
             {user ? (

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { _getUsers } from '../service/_DATA';
 import { useDispatch } from 'react-redux';
 import { LOG_IN } from '../actions';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -10,6 +10,7 @@ const Login = () => {
   const [error, setError] = useState('');
   const dispatch = useDispatch();
   const navigate = useNavigate()
+  const { state } = useLocation();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -25,7 +26,8 @@ const Login = () => {
                 type: LOG_IN,
                 payload: temp_user 
             })
-            navigate("/")
+            console.log("Come to log in: ", state, state?.path)
+            navigate(state?.path || "/");
         }
     }
 
