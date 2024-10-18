@@ -34,7 +34,7 @@ const AddQuestionComponent = () => {
           <input
             type="text"
             value={optionOneText}
-            onChange={(e) => setOptionOneText(e.target.value)}
+            onChange={(e) => setOptionOneText(e.target.value.trim())}
             placeholder="Enter option one text"
             required
             className="form-input"
@@ -45,7 +45,7 @@ const AddQuestionComponent = () => {
           <input
             type="text"
             value={optionTwoText}
-            onChange={(e) => setOptionTwoText(e.target.value)}
+            onChange={(e) => setOptionTwoText(e.target.value.trim())}
             placeholder="Enter option two text"
             required
             className="form-input"
