@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import Question from './questionComponent';
-import { _getQuestions } from '../service/_DATA';
 import './style.css';
 import { useSelector } from 'react-redux';
+import { _getQuestions } from '../service/_DATA';
 
 const Home = ({ onButtonClick }) => {
   const [questionsData, setQuestions] = useState([]);
@@ -13,7 +13,7 @@ const Home = ({ onButtonClick }) => {
     const fetchQuestions = async () => {
       const qu = await _getQuestions();
       const sortedQuestions = Object.values(qu).sort((a, b) => b.timestamp - a.timestamp);
-      setQuestions(Object.values(sortedQuestions));
+      setQuestions(sortedQuestions);
     };
     fetchQuestions();
   }, []);
@@ -52,10 +52,9 @@ const Home = ({ onButtonClick }) => {
             <p>No questions marked as done.</p>
           ) : (
             <div className="question-grid">
-              {doneQuestions.map((question, index) => (
-                <div className="question-card" key={index}>
+              {doneQuestions.map((question) => (
+                <div className="question-card" key={question.id}>
                   <Question
-                    key={question.id}
                     option={question.optionOne.votes.includes(user.id) ? "1" : "2"}
                     isAnswer={true}
                     qu={question}
@@ -72,10 +71,9 @@ const Home = ({ onButtonClick }) => {
             <p>No new questions available.</p>
           ) : (
             <div className="question-grid">
-              {newQuestions.map((question, index) => (
-                <div className="question-card" key={index}>
+              {newQuestions.map((question) => (
+                <div className="question-card" key={question.id}>
                   <Question
-                    key={question.id}
                     option=""
                     isAnswer={false}
                     qu={question}
